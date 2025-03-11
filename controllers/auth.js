@@ -3,10 +3,12 @@ const router = express.Router();
 const User = require("../models/User"); // Ensure this path is correct
 const bcrypt = require("bcrypt");
 
-// Render sign-up form
+// GET render sign-up form
 router.get("/sign-up", (req, res) => {
   res.render("auth/sign-up.ejs");
 });
+
+// the router object is similiar to the aop object in server.js however it only has router functionality
 
 // POST sign-UP form submission
 router.post("/sign-up", async (req, res) => {
@@ -16,12 +18,10 @@ router.post("/sign-up", async (req, res) => {
     if (userInDatabase) {
       return res.send("Username already taken.");
     }
-
     // Check if password and confirmPassword match
     if (req.body.password !== req.body.confirmPassword) {
       return res.send("Password and Confirm Password must match.");
     }
-
     // Hash password
     const hashedPassword = bcrypt.hashSync(req.body.password, 10);
 
@@ -39,12 +39,12 @@ router.post("/sign-up", async (req, res) => {
   }
 });
 
-// GET Render sign-IN form
+// GET Render sign-IN form, sends a page that has a login form
 router.get("/sign-in", (req, res) => {
   res.render("auth/sign-in.ejs");
 });
 
-// POST sign-IN
+// POST sign-IN, rout that will be used when login form is submitted
 router.post("/sign-in", async (req, res) => {
   try {
     // First, get the user from the database
@@ -61,6 +61,7 @@ router.post("/sign-in", async (req, res) => {
     if (!validPassword) {
       return res.send("Login failed. Please try again.");
     }
+    //at this PointerEvent, we made it past the verification
 
     // There is a user AND they had the correct password. Time to make a session!
     // Avoid storing the password, even in hashed format, in the session
@@ -85,7 +86,8 @@ router.post("/sign-in", async (req, res) => {
 router.get("/sign-out", (req, res) => {
   req.session.destroy();
   // res.send("The user wants out!");
-  res.redirect("/");
+  // detroying the session object "ends" the login session
+  res.redirect("/"); // return home after logout
 });
 
 module.exports = router;
